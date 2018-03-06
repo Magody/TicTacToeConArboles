@@ -1,4 +1,5 @@
-function [row, col] = playAgentEnemy(board)
+function [row, col] = playAgentEnemy(delay,board)
+pause(delay);
 % recibimos la matriz actual del juego
 matriz_inicial = board;
 % conversion de la matriz en un vector de 9 elementos, para rellenar las posibles jugadas
@@ -6,7 +7,7 @@ matriz_inicial = matriz_inicial';
 matriz_inicial = matriz_inicial(:);
 
 % jugada nos dice si somos la primera(1), la segunda(2) u otra jugada (0)
-jugada = Controlador.obtenerNumeroJugada(matriz_inicial);
+jugada = ControladorEnemigo.obtenerNumeroJugada(matriz_inicial);
 
 %Es una estrategia complementaria (con jugadas notables).A los arboles de desición con pesos
 [f,c] = Controlador.contraJugadas(board);

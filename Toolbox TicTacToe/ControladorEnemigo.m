@@ -17,9 +17,10 @@ classdef ControladorEnemigo < handle
                 return
             end
         end
-         
+        
         function [fila,columna] = primeraJugada()
             % la esquina es la mejor estrategia para empezar, es una estrategia
+            disp('primera jugada del enemigo');
             [fila,columna] = ControladorEnemigo.escogerEsquinaAleatoria();
             return
         end
@@ -46,7 +47,7 @@ classdef ControladorEnemigo < handle
         
         function [fila,columna] = segundaJugada(matriz)
             % Programacion manual de una segunda jugada, para aumentar el rendimiento
-            
+            disp('segunda jugada del enemigo');
             if(matriz == [0 0 0;0 1 0;0 0 0]) %#ok<BDSCA> es para suprimir warnings
                 % centro
                 [fila,columna] = ControladorEnemigo.escogerEsquinaAleatoria();
@@ -104,14 +105,14 @@ classdef ControladorEnemigo < handle
             % obtenemos que 'encaja' la matriz recibida con la pre-programada, podemos obtener la posición sin
             % tener que rotar de nuevo. Es una solucion bastante creativa, puede ser confusa
             posiciones = [1 4 7;
-                          2 5 8;
-                          3 6 9];
+                2 5 8;
+                3 6 9];
             
             col_posiciones = [1 1 1 2 2 2 3 3 3];
             fil_posiciones = [1 2 3 1 2 3 1 2 3];
             
             copia = posiciones;
-
+            
             for i=1:4
                 if(matriz == [1 0 0;0 2 0;0 0 1]) %#ok<BDSCA>
                     fila=1;
@@ -139,14 +140,14 @@ classdef ControladorEnemigo < handle
             matriz3x3 = matriz3x3';
             
         end
- 
+        
         function turno_nuevo = alternarTurno(turno_actual)
             % si el turno era 1, lo cambia a 2, si era 2 lo cambia a 1
             turno_nuevo = -1;
             if(turno_actual == 1)
                 turno_nuevo = 2;
             else if(turno_actual == 2)
-                turno_nuevo = 1;
+                    turno_nuevo = 1;
                 end
             end
             return
@@ -188,14 +189,14 @@ classdef ControladorEnemigo < handle
                 resultado = 1;
             end
         end
-
+        
         function jugada = elegirSiguienteJugada(l)
             % Una vez generada todo el arbol con sus pesos, elegiremos (del nivel 1) el nodo con mayor peso
             nodo_elegido = 1;
             jugada = 0;
             puntero = l;
             mayor = -inf;
-            if(isempty(puntero.l))
+            if(isempty(puntero))
                 jugada = 1;
                 return
             end
@@ -203,40 +204,53 @@ classdef ControladorEnemigo < handle
             while(puntero.peso >= 0 || puntero.peso < 0)
                 % Comparacion hecha a causa de 'nan'
                 if(puntero.peso > mayor)
-                   mayor = puntero.peso;
-                   qunt = puntero;
-                   jugada = nodo_elegido;
-                
+                    mayor = puntero.peso;
+                    qunt = puntero;
+                    jugada = nodo_elegido;
+                    
                 elseif(puntero.peso == mayor)
+                    bandera_diferenciadora = '';
+                    
+                    
                     try
-                        if( sum(qunt.posicion == 'esquina') == numel('esquina'))
+                        if( strcmp(qunt.posicion,'esquina'))
                             qunt.peso = qunt.peso + 3;
-                        elseif(sum(qunt.posicion == 'centro') == numel('centro'))
+                            bandera_diferenciadora = 'esquina';
+                        elseif(strcmp(qunt.posicion,'centro'))
                             qunt.peso = qunt.peso + 2;
+                            bandera_diferenciadora = 'centro';
+                        elseif(strcmp(qunt.posicion,'lado'))
+                            qunt.peso = qunt.peso + 1;
+                            bandera_diferenciadora = 'lado';
                         end
-                    catch
                         
-                    end
-                    try
-                        if(sum(puntero.posicion == 'esquina') == numel('esquina'))
-                            puntero.peso = puntero.peso + 3;
-                        elseif(sum(puntero.posicion == 'centro') == numel('centro'))
-                            puntero.peso = puntero.peso + 2;
+                        
+                        if(strcmp(puntero.posicion,'esquina'))
+                            if(~strcmp(bandera_diferenciadora,'esquina'))
+                                puntero.peso = puntero.peso + 3;
+                            end
+                        elseif(strcmp(puntero.posicion,'centro'))
+                            if(~strcmp(bandera_diferenciadora,'centro'))
+                                puntero.peso = puntero.peso + 2;
+                            end
                         end
-                    catch
                         
+                        
+                        nodo_elegido = 1;
+                        jugada = 0;
+                        puntero = l;
+                        mayor = -inf;
+                        continue
+                    catch error
+                        disp(error);
                     end
-                    nodo_elegido = 1;
-                    jugada = 0;
-                    puntero = l;
-                    mayor = -inf;
-                    continue
+                    
                 end
                 
                 puntero = puntero.h;
                 
                 if(isempty(puntero))
-                   break; 
+                    break;
                 end
                 
                 nodo_elegido = nodo_elegido + 1;
@@ -256,10 +270,10 @@ classdef ControladorEnemigo < handle
                 return
             else
                 for i=1:numel(esquinas)
-                   if(pos == esquinas(i))
-                       lugar = 'esquina';
-                       return
-                   end
+                    if(pos == esquinas(i))
+                        lugar = 'esquina';
+                        return
+                    end
                 end
                 
                 lugar = 'lado';
@@ -267,11 +281,11 @@ classdef ControladorEnemigo < handle
                 
             end
             
-           
+            
             
             
         end
-
+        
         function total = calcularNodosHijos(espacios_disponibles)
             
             % n!*sumatorio(1/(n-i)!) en donde i va desde 1 hasta n
@@ -305,7 +319,7 @@ classdef ControladorEnemigo < handle
                     columna = 3;
                 end
                 if(i == 4 || i == 7)
-                   fila = fila + 1;
+                    fila = fila + 1;
                 end
                 
                 if(matriz(i) == 1)
@@ -313,7 +327,7 @@ classdef ControladorEnemigo < handle
                     if(contador == 0)
                         break;
                     end
-                end  
+                end
             end
         end
         
@@ -329,51 +343,51 @@ classdef ControladorEnemigo < handle
             vec = vec(:);
             vec = vec';
             for i=1:9
-               if(vec(i) == 2)
-                   vec(i) = 10;
-               end
+                if(vec(i) == 2)
+                    vec(i) = 10;
+                end
             end
             
             mat = vec2mat(vec,3);
             nx = 0;
             for i=1:3
-%                if sum(mat(:,i)) == 2
-%                    % columnas
-%                    nx = nx + 1;
-%                end
-               if sum(mat(:,i)) == 1
-                   % columnas
-                   nx = nx + 1;
-               end
-%                if sum(mat(i,:)) == 2
-%                    % columnas
-%                    nx = nx + 1;
-% 
-%                end
-               if sum(mat(:,i)) == 1
-                   % columnas
-                   nx = nx + 1;
-
-               end
+                %                if sum(mat(:,i)) == 2
+                %                    % columnas
+                %                    nx = nx + 1;
+                %                end
+                if sum(mat(:,i)) == 1
+                    % columnas
+                    nx = nx + 1;
+                end
+                %                if sum(mat(i,:)) == 2
+                %                    % columnas
+                %                    nx = nx + 1;
+                %
+                %                end
+                if sum(mat(:,i)) == 1
+                    % columnas
+                    nx = nx + 1;
+                    
+                end
             end
             
-%             if sum(diag(mat)) == 2
-%                 columnas
-%                 nx = nx + 1;
-%             end
+            %             if sum(diag(mat)) == 2
+            %                 columnas
+            %                 nx = nx + 1;
+            %             end
             if sum(diag(mat)) == 1
                 % columnas
                 nx = nx + 1;
             end
-%             if sum(diag(rot90(mat))) == 2
-%                 % columnas
-%                 nx = nx + 1;
-%             end
+            %             if sum(diag(rot90(mat))) == 2
+            %                 % columnas
+            %                 nx = nx + 1;
+            %             end
             if sum(diag(rot90(mat))) == 1
                 % columnas
                 nx = nx + 1;
             end
-                
+            
         end
         
         function ny = jugadasPosiblesNO(matriz)
@@ -382,52 +396,52 @@ classdef ControladorEnemigo < handle
             vec = vec';
             
             for i=1:9
-               if(vec(i) == 1)
-                   vec(i) = 10;
-               end
+                if(vec(i) == 1)
+                    vec(i) = 10;
+                end
             end
             
             mat = vec2mat(vec,3);
             
             ny = 0;
             for i=1:3
-%                if sum(mat(:,i)) == 4
-%                    % columnas
-%                    ny = ny + 1;
-%                end
-               if sum(mat(:,i)) == 2
-                   % columnas
-                   ny = ny + 1;
-               end
-%                if sum(mat(i,:)) == 4
-%                    % columnas
-%                   ny = ny + 1;
-% 
-%                end
-               if sum(mat(:,i)) == 2
-                   % columnas
-                   ny = ny + 1;
-
-               end
+                %                if sum(mat(:,i)) == 4
+                %                    % columnas
+                %                    ny = ny + 1;
+                %                end
+                if sum(mat(:,i)) == 2
+                    % columnas
+                    ny = ny + 1;
+                end
+                %                if sum(mat(i,:)) == 4
+                %                    % columnas
+                %                   ny = ny + 1;
+                %
+                %                end
+                if sum(mat(:,i)) == 2
+                    % columnas
+                    ny = ny + 1;
+                    
+                end
             end
             
-%             if sum(diag(mat)) == 4
-%                 % columnas
-%                 ny = ny + 1;
-%             end
+            %             if sum(diag(mat)) == 4
+            %                 % columnas
+            %                 ny = ny + 1;
+            %             end
             if sum(diag(mat)) == 2
                 % columnas
-               ny = ny + 1;
+                ny = ny + 1;
             end
-%             if sum(diag(rot90(mat))) == 4
-%                 % columnas
-%                 ny = ny + 1;
-%             end
+            %             if sum(diag(rot90(mat))) == 4
+            %                 % columnas
+            %                 ny = ny + 1;
+            %             end
             if sum(diag(rot90(mat))) == 2
                 % columnas
                 ny = ny + 1;
             end
-                
+            
         end
     end
     

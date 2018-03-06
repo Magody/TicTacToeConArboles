@@ -63,7 +63,7 @@ end
 actualizarVictorias(handles,0,0,0,0);
 
 if(turno == 1)
-    IAplay(handles);
+    IAplay(delay,handles);
 end
 if(modo == 1 && turno == 2)
     enemyPlay(handles);
@@ -106,7 +106,7 @@ global detener;
 global modo;
 global delay;
 if(turno == 2 && ~detener)
-    [row, column] = playAgentEnemy(delay,matrix);
+    [row, column] = playAgentEnemy(matrix);
     
     if(row == 1 && column ==1)
         handles.btn11.FontSize = 20;
@@ -153,7 +153,7 @@ if(turno == 2 && ~detener)
     
     comprobarEstado(handles);
     if(contarCeros(matrix) ~= 0 && ~detener)
-        IAplay(handles);
+        IAplay(delay,handles);
     end
 end
 
@@ -165,7 +165,7 @@ global detener;
 global delay;
 
 if(turno == 1 && ~detener)
-    [row, column] = playAgentStudent(delay,matrix);
+    [row, column] = playAgentStudent(matrix);
     
     if(row == 1 && column ==1)
         handles.btn11.FontSize = 20;
@@ -215,7 +215,7 @@ if(turno == 1 && ~detener)
     
     if(modo == 1)
         if(contarCeros(matrix) ~= 0  && ~detener)
-            enemyPlay(handles);
+            enemyPlay(delay,handles);
         end
     end
 end
@@ -224,6 +224,7 @@ end
 function realizarJugada(hObject,row,column,handles)
 global turno;
 global matrix;
+global delay;
 if(isempty(hObject.String) && turno == 2)
     hObject.FontSize = 20;
     hObject.ForegroundColor = [1 0 0];
@@ -231,7 +232,7 @@ if(isempty(hObject.String) && turno == 2)
     matrix(row,column) = 2;
     cambiarTurno();
     if(contarCeros(matrix) ~= 0)
-        IAplay(handles);
+        IAplay(delay,handles);
     else
         disp('Juego acabado');
     end
@@ -374,7 +375,7 @@ if(turno == 1)
 end
 if(modo == 1)
     if(turno == 2)
-        enemyPlay(handles);
+        enemyPlay(delay,handles);
     end
 end
 
@@ -430,4 +431,4 @@ function pushbutton21_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global delay;
-delay = str2num(handles.txtdelay.String);
+delay = str2int(handles.txtdelay.String);

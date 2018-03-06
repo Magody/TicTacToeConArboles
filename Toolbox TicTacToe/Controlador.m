@@ -195,8 +195,7 @@ classdef Controlador < handle
             jugada = 0;
             puntero = l;
             mayor = -inf;
-            
-            if(isempty(puntero.l))
+            if(isempty(puntero))
                 jugada = 1;
                 return
             end
@@ -204,40 +203,53 @@ classdef Controlador < handle
             while(puntero.peso >= 0 || puntero.peso < 0)
                 % Comparacion hecha a causa de 'nan'
                 if(puntero.peso > mayor)
-                   mayor = puntero.peso;
-                   qunt = puntero;
-                   jugada = nodo_elegido;
-                
+                    mayor = puntero.peso;
+                    qunt = puntero;
+                    jugada = nodo_elegido;
+                    
                 elseif(puntero.peso == mayor)
+                    bandera_diferenciadora = '';
+                    
+                    
                     try
-                        if( sum(qunt.posicion == 'esquina') == numel('esquina'))
+                        if( strcmp(qunt.posicion,'esquina'))
                             qunt.peso = qunt.peso + 3;
-                        elseif(sum(qunt.posicion == 'centro') == numel('centro'))
+                            bandera_diferenciadora = 'esquina';
+                        elseif(strcmp(qunt.posicion,'centro'))
                             qunt.peso = qunt.peso + 2;
+                            bandera_diferenciadora = 'centro';
+                        elseif(strcmp(qunt.posicion,'lado'))
+                            qunt.peso = qunt.peso + 1;
+                            bandera_diferenciadora = 'lado';
                         end
-                    catch
                         
-                    end
-                    try
-                        if(sum(puntero.posicion == 'esquina') == numel('esquina'))
-                            puntero.peso = puntero.peso + 3;
-                        elseif(sum(puntero.posicion == 'centro') == numel('centro'))
-                            puntero.peso = puntero.peso + 2;
+                        
+                        if(strcmp(puntero.posicion,'esquina'))
+                            if(~strcmp(bandera_diferenciadora,'esquina'))
+                                puntero.peso = puntero.peso + 3;
+                            end
+                        elseif(strcmp(puntero.posicion,'centro'))
+                            if(~strcmp(bandera_diferenciadora,'centro'))
+                                puntero.peso = puntero.peso + 2;
+                            end
                         end
-                    catch
                         
+                        
+                        nodo_elegido = 1;
+                        jugada = 0;
+                        puntero = l;
+                        mayor = -inf;
+                        continue
+                    catch error
+                        disp(error);
                     end
-                    nodo_elegido = 1;
-                    jugada = 0;
-                    puntero = l;
-                    mayor = -inf;
-                    continue
+                    
                 end
                 
                 puntero = puntero.h;
                 
                 if(isempty(puntero))
-                   break; 
+                    break;
                 end
                 
                 nodo_elegido = nodo_elegido + 1;

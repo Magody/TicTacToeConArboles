@@ -8,6 +8,8 @@ global empates;
 global total;
 global modo;
 global detener;
+global delay;
+delay = 0.1;
 detener = false;
 addpath('Toolbox TicTacToe');
 victorias_uno = 0;

@@ -1,5 +1,5 @@
-function [row, col] = playAgentStudent(board)
-
+function [row, col] = playAgentStudent(delay,board)
+pause(delay);
 % recibimos la matriz actual del juego
 matriz_inicial = board;
 % conversion de la matriz en un vector de 9 elementos, para rellenar las posibles jugadas
